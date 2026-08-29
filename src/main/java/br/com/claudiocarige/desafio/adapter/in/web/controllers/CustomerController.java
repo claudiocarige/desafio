@@ -5,25 +5,24 @@ import br.com.claudiocarige.desafio.adapter.in.web.dto.CustomerResponse;
 import br.com.claudiocarige.desafio.adapter.in.web.mapper.CustomerMapper;
 import br.com.claudiocarige.desafio.application.dto.CustomerDto;
 import br.com.claudiocarige.desafio.application.port.in.CreateCustomerUseCase;
+import br.com.claudiocarige.desafio.application.port.in.FindCustomerByIdUseCase;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/customers")
 public class CustomerController {
 
     private final CreateCustomerUseCase createCustomerUseCase;
-
+    private final FindCustomerByIdUseCase findCustomerByIdUseCase;
 
     public CustomerController(
-            CreateCustomerUseCase createCustomerUseCase) {
+            CreateCustomerUseCase createCustomerUseCase,
+            FindCustomerByIdUseCase findCustomerByIdUseCase) {
         this.createCustomerUseCase = createCustomerUseCase;
-
+        this.findCustomerByIdUseCase = findCustomerByIdUseCase;
     }
 
     @PostMapping
@@ -33,6 +32,12 @@ public class CustomerController {
 
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(CustomerMapper.toResponse(customer));
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<CustomerResponse> findCustomerById(@PathVariable Long id) {
+        CustomerDto customer = findCustomerByIdUseCase.execute(id);
+        return ResponseEntity.ok(CustomerMapper.toResponse(customer));
     }
 
 }
