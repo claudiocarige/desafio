@@ -7,6 +7,8 @@ import br.com.claudiocarige.desafio.domain.enums.CustomerStatus;
 import br.com.claudiocarige.desafio.domain.model.Customer;
 import org.springframework.stereotype.Service;
 
+import java.util.UUID;
+
 @Service
 public class CreateCustomerUseCaseImpl implements CreateCustomerUseCase {
 
@@ -19,7 +21,7 @@ public class CreateCustomerUseCaseImpl implements CreateCustomerUseCase {
         );
 
         return new CustomerDto(
-                123L,
+                UUID.randomUUID(),
                 customer.getName(),
                 customer.getCpf().value(),
                 customer.getEmail().value(),

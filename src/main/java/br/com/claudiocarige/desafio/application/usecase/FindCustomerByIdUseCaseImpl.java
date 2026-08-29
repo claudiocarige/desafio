@@ -5,11 +5,13 @@ import br.com.claudiocarige.desafio.application.port.in.FindCustomerByIdUseCase;
 import br.com.claudiocarige.desafio.domain.enums.CustomerStatus;
 import org.springframework.stereotype.Service;
 
+import java.util.UUID;
+
 @Service
 public class FindCustomerByIdUseCaseImpl implements FindCustomerByIdUseCase {
 
     @Override
-    public CustomerDto execute(Long id) {
+    public CustomerDto execute(UUID id) {
         if (id == null) {
             throw new IllegalArgumentException("ID do cliente é obrigatório");
         }

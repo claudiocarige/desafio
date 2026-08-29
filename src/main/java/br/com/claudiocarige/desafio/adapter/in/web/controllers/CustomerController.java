@@ -11,6 +11,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.UUID;
+
 @RestController
 @RequestMapping("/customers")
 public class CustomerController {
@@ -35,7 +37,7 @@ public class CustomerController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<CustomerResponse> findCustomerById(@PathVariable Long id) {
+    public ResponseEntity<CustomerResponse> findCustomerById(@PathVariable UUID id) {
         CustomerDto customer = findCustomerByIdUseCase.execute(id);
         return ResponseEntity.ok(CustomerMapper.toResponse(customer));
     }

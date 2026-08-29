@@ -4,8 +4,10 @@ import br.com.claudiocarige.desafio.adapter.in.web.mapper.CustomerMapper;
 import br.com.claudiocarige.desafio.application.dto.CustomerDto;
 import br.com.claudiocarige.desafio.domain.enums.CustomerStatus;
 
+import java.util.UUID;
+
 public record CustomerResponse(
-        Long id,
+        UUID id,
         String name,
         String cpf,
         String email,
