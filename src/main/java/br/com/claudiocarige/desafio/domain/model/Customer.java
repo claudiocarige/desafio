@@ -97,6 +97,10 @@ public final class Customer implements ValidationObject {
         return name;
     }
 
+    public CustomerId getId() {
+        return id;
+    }
+
     public Cpf getCpf() {
         return cpf;
     }
