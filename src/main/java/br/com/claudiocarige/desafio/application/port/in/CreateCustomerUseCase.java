@@ -5,5 +5,5 @@ import br.com.claudiocarige.desafio.application.dto.CustomerDto;
 
 public interface CreateCustomerUseCase {
 
-    CustomerDto execute(CreateCustomerDto customerDto);
+    CustomerDto execute(CreateCustomerDto CreatecustomerDto);
 }

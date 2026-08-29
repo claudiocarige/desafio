@@ -3,29 +3,35 @@ package br.com.claudiocarige.desafio.application.usecase;
 import br.com.claudiocarige.desafio.application.dto.CreateCustomerDto;
 import br.com.claudiocarige.desafio.application.dto.CustomerDto;
 import br.com.claudiocarige.desafio.application.port.in.CreateCustomerUseCase;
-import br.com.claudiocarige.desafio.domain.enums.CustomerStatus;
+import br.com.claudiocarige.desafio.application.port.out.CreateCustomerRepositoryPort;
 import br.com.claudiocarige.desafio.domain.model.Customer;
 import org.springframework.stereotype.Service;
-
-import java.util.UUID;
 
 @Service
 public class CreateCustomerUseCaseImpl implements CreateCustomerUseCase {
 
+    private final CreateCustomerRepositoryPort createCustomerRepository;
+
+    public CreateCustomerUseCaseImpl(CreateCustomerRepositoryPort createCustomerRepository) {
+        this.createCustomerRepository = createCustomerRepository;
+    }
+
     @Override
-    public CustomerDto execute(CreateCustomerDto customerDto) {
+    public CustomerDto execute(CreateCustomerDto createCustomerDto) {
         Customer customer = Customer.create(
-                customerDto.name(),
-                customerDto.cpf(),
-                customerDto.email()
+                createCustomerDto.name(),
+                createCustomerDto.cpf(),
+                createCustomerDto.email()
         );
 
+        Customer savedCustomer = createCustomerRepository.save(customer);
+
         return new CustomerDto(
-                UUID.randomUUID(),
-                customer.getName(),
-                customer.getCpf().value(),
-                customer.getEmail().value(),
-                customer.getStatus() != null ? customer.getStatus() : CustomerStatus.ACTIVE
+                savedCustomer.getId().value(),
+                savedCustomer.getName(),
+                savedCustomer.getCpf().value(),
+                savedCustomer.getEmail().value(),
+                savedCustomer.getStatus()
         );
     }
 }
