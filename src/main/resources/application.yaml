@@ -1,3 +1,7 @@
 spring:
   application:
     name: desafio
+  security:
+    user:
+      name: desafio-dantum
+      password: 123456
