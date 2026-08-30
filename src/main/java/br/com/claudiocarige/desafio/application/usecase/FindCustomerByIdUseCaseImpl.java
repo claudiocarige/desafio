@@ -1,5 +1,6 @@
 package br.com.claudiocarige.desafio.application.usecase;
 
+import br.com.claudiocarige.desafio.adapter.in.web.mapper.CustomerMapper;
 import br.com.claudiocarige.desafio.application.dto.CustomerDto;
 import br.com.claudiocarige.desafio.application.port.in.FindCustomerByIdUseCase;
 import br.com.claudiocarige.desafio.application.port.out.FindCustomerByIdRepositoryPort;
@@ -26,12 +27,6 @@ public class FindCustomerByIdUseCaseImpl implements FindCustomerByIdUseCase {
 
         Customer customer = findCustomerByIdRepository.findById(id);
 
-        return new CustomerDto(
-                customer.getId().value(),
-                customer.getName(),
-                customer.getCpf().value(),
-                customer.getEmail().value(),
-                customer.getStatus()
-        );
+        return CustomerMapper.customerToCustomerDto(customer);
     }
 }

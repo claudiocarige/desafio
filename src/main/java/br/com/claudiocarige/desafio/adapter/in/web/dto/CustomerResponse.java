@@ -14,6 +14,6 @@ public record CustomerResponse(
         CustomerStatus status) {
 
     public static CustomerResponse from(CustomerDto customerDto) {
-        return CustomerMapper.toResponse(customerDto);
+        return CustomerMapper.customerDtoToCustomerResponse(customerDto);
     }
 }

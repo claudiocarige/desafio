@@ -30,10 +30,10 @@ public class CustomerController {
     @PostMapping
     public ResponseEntity<CustomerResponse> createCustomer(@Valid @RequestBody CreateCustomerRequest request) {
 
-        CustomerDto customer = createCustomerUseCase.execute(CustomerMapper.toCreateCustomerDto(request));
+        CustomerDto customer = createCustomerUseCase.execute(CustomerMapper.createCustomerRequestToCreateCustomerDto(request));
 
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(CustomerMapper.toResponse(customer));
+                .body(CustomerMapper.customerDtoToCustomerResponse(customer));
     }
 
     @GetMapping("/{id}")
@@ -41,7 +41,7 @@ public class CustomerController {
 
         CustomerDto customer = findCustomerByIdUseCase.findCustomerById(id);
 
-        return ResponseEntity.ok(CustomerMapper.toResponse(customer));
+        return ResponseEntity.ok(CustomerMapper.customerDtoToCustomerResponse(customer));
     }
 
 }
