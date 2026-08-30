@@ -11,6 +11,7 @@ import br.com.claudiocarige.desafio.application.port.in.CreateCustomerUseCase;
 import br.com.claudiocarige.desafio.application.port.in.FindCustomerByIdUseCase;
 import br.com.claudiocarige.desafio.application.port.in.SearchCustomersUseCase;
 import br.com.claudiocarige.desafio.application.port.in.UpdateCustomerUseCase;
+import br.com.claudiocarige.desafio.domain.exception.DomainException;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -82,5 +83,15 @@ public class CustomerController {
         );
 
         return ResponseEntity.ok().body(CustomerMapper.customerDtoToCustomerResponse(customer));
+    }
+
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity<Void> deleteCustomer(@PathVariable UUID id) {
+        // Este endpoint está a nivel informativo, pois não implementarei a deleção de Clientes.
+        throw DomainException.with(
+                "Clientes não podem ser deletados fisicamente. " +
+                        "Por favor, utilize a rota de atualização (PUT) " +
+                        "para alterar o status para BLOCKED ou INACTIVE."
+        );
     }
 }
