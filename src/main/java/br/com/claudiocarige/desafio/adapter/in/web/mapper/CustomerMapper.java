@@ -1,14 +1,19 @@
 package br.com.claudiocarige.desafio.adapter.in.web.mapper;
 
 import br.com.claudiocarige.desafio.adapter.in.web.dto.CreateCustomerRequest;
+import br.com.claudiocarige.desafio.adapter.in.web.dto.CustomerPageResponse;
 import br.com.claudiocarige.desafio.adapter.in.web.dto.CustomerResponse;
 import br.com.claudiocarige.desafio.adapter.out.persistence.CustomerEntity;
 import br.com.claudiocarige.desafio.application.dto.CreateCustomerDto;
 import br.com.claudiocarige.desafio.application.dto.CustomerDto;
+import br.com.claudiocarige.desafio.application.dto.CustomerPageDto;
 import br.com.claudiocarige.desafio.domain.model.Customer;
 import br.com.claudiocarige.desafio.domain.valueobject.Cpf;
 import br.com.claudiocarige.desafio.domain.valueobject.CustomerId;
 import br.com.claudiocarige.desafio.domain.valueobject.Email;
+import org.springframework.data.domain.Page;
+
+import java.util.List;
 
 public final class CustomerMapper {
 
@@ -81,6 +86,19 @@ public final class CustomerMapper {
                 new Email(entity.getEmail()),
                 entity.getStatus()
         );
+    }
+
+    public static CustomerPageResponse customerPageToCustomerPageResponse(List<CustomerResponse> customerResponses, CustomerPageDto customersPage) {
+        CustomerPageResponse response = CustomerPageResponse.of(
+                customerResponses,
+                customersPage.page(),
+                customersPage.size(),
+                customersPage.totalElements(),
+                customersPage.totalPages(),
+                customersPage.hasNext(),
+                customersPage.hasPrevious()
+        );
+        return response;
     }
 
     public static Cpf toCpf(String cpf) {
