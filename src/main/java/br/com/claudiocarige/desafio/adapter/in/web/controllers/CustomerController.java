@@ -3,12 +3,14 @@ package br.com.claudiocarige.desafio.adapter.in.web.controllers;
 import br.com.claudiocarige.desafio.adapter.in.web.dto.CreateCustomerRequest;
 import br.com.claudiocarige.desafio.adapter.in.web.dto.CustomerPageResponse;
 import br.com.claudiocarige.desafio.adapter.in.web.dto.CustomerResponse;
+import br.com.claudiocarige.desafio.adapter.in.web.dto.UpdateCustomerRequest;
 import br.com.claudiocarige.desafio.adapter.in.web.mapper.CustomerMapper;
 import br.com.claudiocarige.desafio.application.dto.CustomerDto;
 import br.com.claudiocarige.desafio.application.dto.CustomerPageDto;
 import br.com.claudiocarige.desafio.application.port.in.CreateCustomerUseCase;
 import br.com.claudiocarige.desafio.application.port.in.FindCustomerByIdUseCase;
 import br.com.claudiocarige.desafio.application.port.in.SearchCustomersUseCase;
+import br.com.claudiocarige.desafio.application.port.in.UpdateCustomerUseCase;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -24,17 +26,20 @@ public class CustomerController {
     private final CreateCustomerUseCase createCustomerUseCase;
     private final FindCustomerByIdUseCase findCustomerByIdUseCase;
     private final SearchCustomersUseCase searchCustomersUseCase;
+    private final UpdateCustomerUseCase updateCustomerUseCase;
 
     public CustomerController(
             CreateCustomerUseCase createCustomerUseCase,
             FindCustomerByIdUseCase findCustomerByIdUseCase,
-            SearchCustomersUseCase searchCustomersUseCase) {
+            SearchCustomersUseCase searchCustomersUseCase,
+            UpdateCustomerUseCase updateCustomerUseCase) {
         this.createCustomerUseCase = createCustomerUseCase;
         this.findCustomerByIdUseCase = findCustomerByIdUseCase;
         this.searchCustomersUseCase = searchCustomersUseCase;
+        this.updateCustomerUseCase = updateCustomerUseCase;
     }
 
-    @PostMapping
+    @PostMapping("/create")
     public ResponseEntity<CustomerResponse> createCustomer(@Valid @RequestBody CreateCustomerRequest request) {
 
         CustomerDto customer = createCustomerUseCase.execute(CustomerMapper.createCustomerRequestToCreateCustomerDto(request));
@@ -43,7 +48,7 @@ public class CustomerController {
                 .body(CustomerMapper.customerDtoToCustomerResponse(customer));
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/search/{id}")
     public ResponseEntity<CustomerResponse> findCustomerById(@PathVariable UUID id) {
 
         CustomerDto customer = findCustomerByIdUseCase.findCustomerById(id);
@@ -51,7 +56,7 @@ public class CustomerController {
         return ResponseEntity.ok(CustomerMapper.customerDtoToCustomerResponse(customer));
     }
 
-    @GetMapping
+    @GetMapping("/search")
     public ResponseEntity<CustomerPageResponse> searchCustomers(
             @RequestParam(defaultValue = "0", required = false) Integer page,
             @RequestParam(defaultValue = "20", required = false) Integer size) {
@@ -64,5 +69,18 @@ public class CustomerController {
         CustomerPageResponse response = CustomerMapper.customerPageToCustomerPageResponse(customerResponses, customersPage);
 
         return ResponseEntity.ok().body(response);
+    }
+
+    @PutMapping("/update/{id}")
+    public ResponseEntity<CustomerResponse> updateCustomer(
+            @PathVariable UUID id,
+            @Valid @RequestBody UpdateCustomerRequest request) {
+
+        CustomerDto customer = updateCustomerUseCase.execute(
+                id,
+                CustomerMapper.updateCustomerRequestToUpdateCustomerDto(request)
+        );
+
+        return ResponseEntity.ok().body(CustomerMapper.customerDtoToCustomerResponse(customer));
     }
 }

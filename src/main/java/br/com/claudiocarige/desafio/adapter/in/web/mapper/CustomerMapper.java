@@ -3,15 +3,17 @@ package br.com.claudiocarige.desafio.adapter.in.web.mapper;
 import br.com.claudiocarige.desafio.adapter.in.web.dto.CreateCustomerRequest;
 import br.com.claudiocarige.desafio.adapter.in.web.dto.CustomerPageResponse;
 import br.com.claudiocarige.desafio.adapter.in.web.dto.CustomerResponse;
+import br.com.claudiocarige.desafio.adapter.in.web.dto.UpdateCustomerRequest;
 import br.com.claudiocarige.desafio.adapter.out.persistence.CustomerEntity;
 import br.com.claudiocarige.desafio.application.dto.CreateCustomerDto;
 import br.com.claudiocarige.desafio.application.dto.CustomerDto;
 import br.com.claudiocarige.desafio.application.dto.CustomerPageDto;
+import br.com.claudiocarige.desafio.application.dto.UpdateCustomerDto;
+import br.com.claudiocarige.desafio.domain.enums.CustomerStatus;
 import br.com.claudiocarige.desafio.domain.model.Customer;
 import br.com.claudiocarige.desafio.domain.valueobject.Cpf;
 import br.com.claudiocarige.desafio.domain.valueobject.CustomerId;
 import br.com.claudiocarige.desafio.domain.valueobject.Email;
-import org.springframework.data.domain.Page;
 
 import java.util.List;
 
@@ -43,6 +45,15 @@ public final class CustomerMapper {
                 request.name(),
                 toCpf(request.cpf()),
                 toEmail(request.email())
+        );
+    }
+
+    public static UpdateCustomerDto updateCustomerRequestToUpdateCustomerDto(UpdateCustomerRequest request) {
+        return new UpdateCustomerDto(
+                request.name(),
+                toCpf(request.cpf()),
+                toEmail(request.email()),
+                CustomerStatus.toEnum(request.status())
         );
     }
 
@@ -89,7 +100,7 @@ public final class CustomerMapper {
     }
 
     public static CustomerPageResponse customerPageToCustomerPageResponse(List<CustomerResponse> customerResponses, CustomerPageDto customersPage) {
-        CustomerPageResponse response = CustomerPageResponse.of(
+        return CustomerPageResponse.of(
                 customerResponses,
                 customersPage.page(),
                 customersPage.size(),
@@ -98,7 +109,16 @@ public final class CustomerMapper {
                 customersPage.hasNext(),
                 customersPage.hasPrevious()
         );
-        return response;
+    }
+
+    public static Customer updateCustomerDtoToCustomer(UpdateCustomerDto customerDto, Customer oldCustomer) {
+        return Customer.restore(
+                oldCustomer.getId(),
+                customerDto.name(),
+                customerDto.cpf(),
+                customerDto.email(),
+                customerDto.status() == null ? oldCustomer.getStatus() : customerDto.status()
+        );
     }
 
     public static Cpf toCpf(String cpf) {

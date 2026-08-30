@@ -7,6 +7,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -130,4 +131,21 @@ public class GlobalExceptionHandler {
                         request.getRequestURI()
                 ));
     }
+
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public ResponseEntity<ApiError> handleJsonParseError(HttpMessageNotReadableException ex,HttpServletRequest request) {
+
+        var status = HttpStatus.BAD_REQUEST;
+        String msg = "JSON inválido. Verifique se todos os campos têm valores ou remova-os.";
+        log.warn("String msg = SON inválido. Verifique se todos os campos têm valores ou remova-os.; '{}': {}", request.getRequestURI(), ex.getMessage());
+        return ResponseEntity.status(status).body(
+                ApiError.of(
+                        status.value(),
+                        status.getReasonPhrase(),
+                        msg,
+                        request.getRequestURI()
+                ));
+
+    }
 }
+
