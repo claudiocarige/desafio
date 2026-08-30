@@ -6,5 +6,5 @@ import java.util.UUID;
 
 public interface FindCustomerByIdUseCase {
 
-    CustomerDto execute(UUID id);
+    CustomerDto findCustomerById(UUID id);
 }

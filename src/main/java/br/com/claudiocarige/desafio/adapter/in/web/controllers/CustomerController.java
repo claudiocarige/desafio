@@ -38,7 +38,9 @@ public class CustomerController {
 
     @GetMapping("/{id}")
     public ResponseEntity<CustomerResponse> findCustomerById(@PathVariable UUID id) {
-        CustomerDto customer = findCustomerByIdUseCase.execute(id);
+
+        CustomerDto customer = findCustomerByIdUseCase.findCustomerById(id);
+
         return ResponseEntity.ok(CustomerMapper.toResponse(customer));
     }
 

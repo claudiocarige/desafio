@@ -2,7 +2,9 @@ package br.com.claudiocarige.desafio.application.usecase;
 
 import br.com.claudiocarige.desafio.application.dto.CustomerDto;
 import br.com.claudiocarige.desafio.application.port.in.FindCustomerByIdUseCase;
-import br.com.claudiocarige.desafio.domain.enums.CustomerStatus;
+import br.com.claudiocarige.desafio.application.port.out.FindCustomerByIdRepositoryPort;
+import br.com.claudiocarige.desafio.domain.exception.DomainException;
+import br.com.claudiocarige.desafio.domain.model.Customer;
 import org.springframework.stereotype.Service;
 
 import java.util.UUID;
@@ -10,12 +12,26 @@ import java.util.UUID;
 @Service
 public class FindCustomerByIdUseCaseImpl implements FindCustomerByIdUseCase {
 
+    private final FindCustomerByIdRepositoryPort findCustomerByIdRepository;
+
+    public FindCustomerByIdUseCaseImpl(FindCustomerByIdRepositoryPort findCustomerByIdRepository) {
+        this.findCustomerByIdRepository = findCustomerByIdRepository;
+    }
+
     @Override
-    public CustomerDto execute(UUID id) {
-        if (id == null) {
-            throw new IllegalArgumentException("ID do cliente é obrigatório");
+    public CustomerDto findCustomerById(UUID id) {
+        if (id == null || id.toString().isBlank()) {
+            throw DomainException.with("ID do cliente é obrigatório");
         }
 
-        return new CustomerDto(id, "Cliente busca por id mockado", "12345678909", "cliente@email.com", CustomerStatus.ACTIVE);
+        Customer customer = findCustomerByIdRepository.findById(id);
+
+        return new CustomerDto(
+                customer.getId().value(),
+                customer.getName(),
+                customer.getCpf().value(),
+                customer.getEmail().value(),
+                customer.getStatus()
+        );
     }
 }

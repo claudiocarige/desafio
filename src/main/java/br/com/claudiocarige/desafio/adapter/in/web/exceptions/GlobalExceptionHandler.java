@@ -2,6 +2,7 @@ package br.com.claudiocarige.desafio.adapter.in.web.exceptions;
 
 
 import br.com.claudiocarige.desafio.domain.exception.DomainException;
+import br.com.claudiocarige.desafio.domain.exception.NotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -9,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 import java.util.List;
 
@@ -35,6 +37,23 @@ public class GlobalExceptionHandler {
                         "Um ou mais campos inválidos.",
                         request.getRequestURI(),
                         fieldErrors
+                ));
+    }
+
+    @ExceptionHandler(NotFoundException.class)
+    public ResponseEntity<ApiError> handleNotFoundException(
+            NotFoundException ex,
+            HttpServletRequest request) {
+
+        log.warn("Recurso não encontrado no '{}': {}", request.getRequestURI(), ex.getMessage());
+
+        return ResponseEntity
+                .status(HttpStatus.NOT_FOUND)
+                .body(ApiError.of(
+                        HttpStatus.NOT_FOUND.value(),
+                        HttpStatus.NOT_FOUND.getReasonPhrase(),
+                        ex.getMessage(),
+                        request.getRequestURI()
                 ));
     }
 
@@ -71,4 +90,25 @@ public class GlobalExceptionHandler {
                 ));
     }
 
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    public ResponseEntity<ApiError> handleTypeMismatch(
+            MethodArgumentTypeMismatchException ex,
+            HttpServletRequest request) {
+
+        log.warn("Erro de conversão de tipo no '{}': {}", request.getRequestURI(), ex.getMessage());
+
+        String mensagem = "O parâmetro '%s' recebeu um valor inválido. Formato esperado: %s."
+                .formatted(ex.getName(), ex.getRequiredType().getSimpleName());
+
+        var status = HttpStatus.BAD_REQUEST; // 400
+
+        return ResponseEntity
+                .status(status)
+                .body(ApiError.of(
+                        status.value(),
+                        status.getReasonPhrase(),
+                        mensagem,
+                        request.getRequestURI()
+                ));
+    }
 }
