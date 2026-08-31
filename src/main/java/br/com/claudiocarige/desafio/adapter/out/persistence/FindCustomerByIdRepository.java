@@ -2,25 +2,49 @@ package br.com.claudiocarige.desafio.adapter.out.persistence;
 
 import br.com.claudiocarige.desafio.adapter.in.web.mapper.CustomerMapper;
 import br.com.claudiocarige.desafio.application.port.out.FindCustomerByIdRepositoryPort;
+import br.com.claudiocarige.desafio.domain.enums.CustomerStatus;
 import br.com.claudiocarige.desafio.domain.exception.NotFoundException;
 import br.com.claudiocarige.desafio.domain.model.Customer;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.UUID;
 
+@Slf4j
 @Repository
 public class FindCustomerByIdRepository implements FindCustomerByIdRepositoryPort {
 
-    private final CustomerRepository customerRepository;
+    private static final String SQL_FIND_BY_ID =
+            "SELECT id, name, cpf, email, status FROM customers WHERE id = ?";
 
-    public FindCustomerByIdRepository(CustomerRepository customerRepository) {
-        this.customerRepository = customerRepository;
+    private final JdbcTemplate jdbcTemplate;
+
+    public FindCustomerByIdRepository(JdbcTemplate jdbcTemplate) {
+        this.jdbcTemplate = jdbcTemplate;
     }
 
     @Override
     public Customer findById(UUID id) {
-        CustomerEntity customerEntity = customerRepository.findById(id).orElseThrow(() -> NotFoundException.of("Cliente", id));
+        log.info("### INICIANDO FindCustomerByIdRepository - ID: {} ###", id);
+        List<CustomerEntity> result = jdbcTemplate.query(
+                SQL_FIND_BY_ID,
+                (rs, rowNum) -> new CustomerEntity(
+                        UUID.fromString(rs.getString("id")),
+                        rs.getString("name"),
+                        rs.getString("cpf"),
+                        rs.getString("email"),
+                        CustomerStatus.valueOf(rs.getString("status"))
+                ),
+                id.toString()
+        );
 
-        return CustomerMapper.customerEntityToCustomer(customerEntity);
+        if (result.isEmpty()) {
+            throw NotFoundException.of("Cliente não encontrado ", id);
+        }
+        log.info("### FINALIZANDO FindCustomerByIdRepository - Cliente encontrado: {} ###", result.get(0).getId());
+        return CustomerMapper.customerEntityToCustomer(result.get(0));
     }
 }
+

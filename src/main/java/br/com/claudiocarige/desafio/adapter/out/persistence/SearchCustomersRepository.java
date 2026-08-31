@@ -2,6 +2,7 @@ package br.com.claudiocarige.desafio.adapter.out.persistence;
 
 import br.com.claudiocarige.desafio.adapter.in.web.mapper.CustomerMapper;
 import br.com.claudiocarige.desafio.application.port.out.SearchCustomersRepositoryPort;
+import br.com.claudiocarige.desafio.domain.enums.CustomerStatus;
 import br.com.claudiocarige.desafio.domain.model.Customer;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -28,6 +29,12 @@ public class SearchCustomersRepository implements SearchCustomersRepositoryPort 
     public SearchResult searchByName(String name, int page, int size) {
         String normalizedName = name.trim();
         Page<CustomerEntity> pageResult = customerRepository.findByNameContainingNative(normalizedName, PageRequest.of(page, size));
+        return mapResult(pageResult);
+    }
+
+    @Override
+    public SearchResult searchByStatus(CustomerStatus status, int page, int size) {
+        Page<CustomerEntity> pageResult = customerRepository.findByStatusNative(status.name(), PageRequest.of(page, size));
         return mapResult(pageResult);
     }
 

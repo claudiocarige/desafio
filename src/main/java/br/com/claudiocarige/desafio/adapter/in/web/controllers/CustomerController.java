@@ -10,9 +10,11 @@ import br.com.claudiocarige.desafio.application.dto.CustomerPageDto;
 import br.com.claudiocarige.desafio.application.dto.CustomerScoreDto;
 import br.com.claudiocarige.desafio.application.port.in.CreateCustomerUseCase;
 import br.com.claudiocarige.desafio.application.port.in.FindCustomerByIdUseCase;
+import br.com.claudiocarige.desafio.application.port.in.FindCustomersByStatusUseCase;
 import br.com.claudiocarige.desafio.application.port.in.GetCustomerScoreUseCase;
 import br.com.claudiocarige.desafio.application.port.in.SearchCustomersUseCase;
 import br.com.claudiocarige.desafio.application.port.in.UpdateCustomerUseCase;
+import br.com.claudiocarige.desafio.domain.enums.CustomerStatus;
 import br.com.claudiocarige.desafio.domain.exception.DomainException;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -31,18 +33,21 @@ public class CustomerController {
     private final SearchCustomersUseCase searchCustomersUseCase;
     private final UpdateCustomerUseCase updateCustomerUseCase;
     private final GetCustomerScoreUseCase getCustomerScoreUseCase;
+    private final FindCustomersByStatusUseCase findCustomersByStatusUseCase;
 
     public CustomerController(
             CreateCustomerUseCase createCustomerUseCase,
             FindCustomerByIdUseCase findCustomerByIdUseCase,
             SearchCustomersUseCase searchCustomersUseCase,
             UpdateCustomerUseCase updateCustomerUseCase,
-            GetCustomerScoreUseCase getCustomerScoreUseCase) {
+            GetCustomerScoreUseCase getCustomerScoreUseCase,
+            FindCustomersByStatusUseCase findCustomersByStatusUseCase) {
         this.createCustomerUseCase = createCustomerUseCase;
         this.findCustomerByIdUseCase = findCustomerByIdUseCase;
         this.searchCustomersUseCase = searchCustomersUseCase;
         this.updateCustomerUseCase = updateCustomerUseCase;
         this.getCustomerScoreUseCase = getCustomerScoreUseCase;
+        this.findCustomersByStatusUseCase = findCustomersByStatusUseCase;
     }
 
     @PostMapping("/create")
@@ -95,6 +100,23 @@ public class CustomerController {
     public ResponseEntity<CustomerScoreDto> getCustomerScore(@PathVariable UUID id) {
         CustomerScoreDto score = getCustomerScoreUseCase.execute(id);
         return ResponseEntity.ok(score);
+    }
+
+    @GetMapping
+    public ResponseEntity<CustomerPageResponse> findCustomersByStatus(
+            @RequestParam String status,
+            @RequestParam(defaultValue = "0", required = false) Integer page,
+            @RequestParam(defaultValue = "20", required = false) Integer size) {
+
+        CustomerStatus customerStatus = CustomerStatus.toEnum(status);
+        CustomerPageDto customersPage = findCustomersByStatusUseCase.execute(customerStatus, page, size);
+        List<CustomerResponse> customerResponses = customersPage.content().stream()
+                .map(CustomerMapper::customerDtoToCustomerResponse)
+                .toList();
+
+        CustomerPageResponse response = CustomerMapper.customerPageToCustomerPageResponse(customerResponses, customersPage);
+
+        return ResponseEntity.ok(response);
     }
 
     @DeleteMapping("/delete/{id}")

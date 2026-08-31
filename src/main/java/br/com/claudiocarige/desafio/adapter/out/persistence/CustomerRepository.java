@@ -25,4 +25,11 @@ public interface CustomerRepository extends JpaRepository<CustomerEntity, UUID> 
         nativeQuery = true
     )
     Page<CustomerEntity> findByNameContainingNative(@Param("name") String name, Pageable pageable);
+
+    @Query(
+        value = "SELECT * FROM customers WHERE status = :status",
+        countQuery = "SELECT count(*) FROM customers WHERE status = :status",
+        nativeQuery = true
+    )
+    Page<CustomerEntity> findByStatusNative(@Param("status") String status, Pageable pageable);
 }
