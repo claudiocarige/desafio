@@ -65,9 +65,10 @@ public class CustomerController {
     @GetMapping("/search")
     public ResponseEntity<CustomerPageResponse> searchCustomers(
             @RequestParam(defaultValue = "0", required = false) Integer page,
-            @RequestParam(defaultValue = "20", required = false) Integer size) {
+            @RequestParam(defaultValue = "20", required = false) Integer size,
+            @RequestParam(required = false) String name) {
 
-        CustomerPageDto customersPage = searchCustomersUseCase.execute(page, size);
+        CustomerPageDto customersPage = searchCustomersUseCase.execute(page, size, name);
         List<CustomerResponse> customerResponses = customersPage.content().stream()
                 .map(CustomerMapper::customerDtoToCustomerResponse)
                 .toList();

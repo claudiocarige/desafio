@@ -8,6 +8,8 @@ public interface SearchCustomersRepositoryPort {
 
     SearchResult search(int page, int size);
 
+    SearchResult searchByName(String name, int page, int size);
+
     record SearchResult(List<Customer> content, long totalElements) {
     }
 }

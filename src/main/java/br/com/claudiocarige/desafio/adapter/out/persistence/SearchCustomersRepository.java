@@ -21,6 +21,17 @@ public class SearchCustomersRepository implements SearchCustomersRepositoryPort 
     @Override
     public SearchResult search(int page, int size) {
         Page<CustomerEntity> pageResult = customerRepository.findAllCustomersNative(PageRequest.of(page, size));
+        return mapResult(pageResult);
+    }
+
+    @Override
+    public SearchResult searchByName(String name, int page, int size) {
+        String normalizedName = name.trim();
+        Page<CustomerEntity> pageResult = customerRepository.findByNameContainingNative(normalizedName, PageRequest.of(page, size));
+        return mapResult(pageResult);
+    }
+
+    private SearchResult mapResult(Page<CustomerEntity> pageResult) {
         List<Customer> customers = pageResult.stream()
                 .map(CustomerMapper::customerEntityToCustomer)
                 .toList();

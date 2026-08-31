@@ -5,7 +5,6 @@ import br.com.claudiocarige.desafio.application.dto.CustomerDto;
 import br.com.claudiocarige.desafio.application.dto.CustomerPageDto;
 import br.com.claudiocarige.desafio.application.port.in.SearchCustomersUseCase;
 import br.com.claudiocarige.desafio.application.port.out.SearchCustomersRepositoryPort;
-import br.com.claudiocarige.desafio.domain.model.Customer;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -25,9 +24,14 @@ public class SearchCustomersUseCaseImpl implements SearchCustomersUseCase {
 
     @Override
     public CustomerPageDto execute(Integer page, Integer size) {
+        return execute(page, size, null);
+    }
+
+    @Override
+    public CustomerPageDto execute(Integer page, Integer size, String name) {
         int currentPage = page != null ? page : DEFAULT_PAGE;
         int currentSize = size != null ? size : DEFAULT_SIZE;
-
+        boolean nameExiste = isNameExiste(name);
         if (currentPage < 0) {
             throw new IllegalArgumentException("Página deve ser maior ou igual a zero");
         }
@@ -38,11 +42,18 @@ public class SearchCustomersUseCaseImpl implements SearchCustomersUseCase {
             throw new IllegalArgumentException("Tamanho da página não pode ser maior que " + MAX_SIZE);
         }
 
-        SearchCustomersRepositoryPort.SearchResult result = searchCustomersRepository.search(currentPage, currentSize);
+        SearchCustomersRepositoryPort.SearchResult result = nameExiste
+                ? searchCustomersRepository.search(currentPage, currentSize)
+                : searchCustomersRepository.searchByName(name.trim(), currentPage, currentSize);
+
         List<CustomerDto> content = result.content().stream()
                 .map(CustomerMapper::customerToCustomerDto)
                 .toList();
 
         return CustomerPageDto.of(content, currentPage, currentSize, result.totalElements());
+    }
+
+    private boolean isNameExiste(String name) {
+        return name == null || name.isBlank();
     }
 }
