@@ -7,8 +7,10 @@ import br.com.claudiocarige.desafio.adapter.in.web.dto.UpdateCustomerRequest;
 import br.com.claudiocarige.desafio.adapter.in.web.mapper.CustomerMapper;
 import br.com.claudiocarige.desafio.application.dto.CustomerDto;
 import br.com.claudiocarige.desafio.application.dto.CustomerPageDto;
+import br.com.claudiocarige.desafio.application.dto.CustomerScoreDto;
 import br.com.claudiocarige.desafio.application.port.in.CreateCustomerUseCase;
 import br.com.claudiocarige.desafio.application.port.in.FindCustomerByIdUseCase;
+import br.com.claudiocarige.desafio.application.port.in.GetCustomerScoreUseCase;
 import br.com.claudiocarige.desafio.application.port.in.SearchCustomersUseCase;
 import br.com.claudiocarige.desafio.application.port.in.UpdateCustomerUseCase;
 import br.com.claudiocarige.desafio.domain.exception.DomainException;
@@ -28,16 +30,19 @@ public class CustomerController {
     private final FindCustomerByIdUseCase findCustomerByIdUseCase;
     private final SearchCustomersUseCase searchCustomersUseCase;
     private final UpdateCustomerUseCase updateCustomerUseCase;
+    private final GetCustomerScoreUseCase getCustomerScoreUseCase;
 
     public CustomerController(
             CreateCustomerUseCase createCustomerUseCase,
             FindCustomerByIdUseCase findCustomerByIdUseCase,
             SearchCustomersUseCase searchCustomersUseCase,
-            UpdateCustomerUseCase updateCustomerUseCase) {
+            UpdateCustomerUseCase updateCustomerUseCase,
+            GetCustomerScoreUseCase getCustomerScoreUseCase) {
         this.createCustomerUseCase = createCustomerUseCase;
         this.findCustomerByIdUseCase = findCustomerByIdUseCase;
         this.searchCustomersUseCase = searchCustomersUseCase;
         this.updateCustomerUseCase = updateCustomerUseCase;
+        this.getCustomerScoreUseCase = getCustomerScoreUseCase;
     }
 
     @PostMapping("/create")
@@ -83,6 +88,12 @@ public class CustomerController {
         );
 
         return ResponseEntity.ok().body(CustomerMapper.customerDtoToCustomerResponse(customer));
+    }
+
+    @GetMapping("/{id}/score")
+    public ResponseEntity<CustomerScoreDto> getCustomerScore(@PathVariable UUID id) {
+        CustomerScoreDto score = getCustomerScoreUseCase.execute(id);
+        return ResponseEntity.ok(score);
     }
 
     @DeleteMapping("/delete/{id}")

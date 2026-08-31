@@ -2,6 +2,7 @@ package br.com.claudiocarige.desafio.adapter.in.web.exceptions;
 
 
 import br.com.claudiocarige.desafio.domain.exception.DomainException;
+import br.com.claudiocarige.desafio.domain.exception.ExternalScoreServiceException;
 import br.com.claudiocarige.desafio.domain.exception.NotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
@@ -127,6 +128,27 @@ public class GlobalExceptionHandler {
                 .body(ApiError.of(
                         status.value(),
                         status.getReasonPhrase(),
+                        ex.getMessage(),
+                        request.getRequestURI()
+                ));
+    }
+
+    @ExceptionHandler(ExternalScoreServiceException.class)
+    public ResponseEntity<ApiError> handleExternalScoreServiceException(
+            ExternalScoreServiceException ex,
+            HttpServletRequest request) {
+
+        log.error("Erro ao consultar score externo no '{}': {}", request.getRequestURI(), ex.getMessage(), ex);
+
+        int codigoHttp = (ex.getStatusCode() != null) ? ex.getStatusCode() : 502;
+        HttpStatus enumStatus = HttpStatus.resolve(codigoHttp);
+        String reasonPhrase = (enumStatus != null) ? enumStatus.getReasonPhrase() : "Erro Externo";
+
+        return ResponseEntity
+                .status(codigoHttp)
+                .body(ApiError.of(
+                        codigoHttp,
+                        reasonPhrase,
                         ex.getMessage(),
                         request.getRequestURI()
                 ));

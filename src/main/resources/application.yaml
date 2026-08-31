@@ -35,3 +35,8 @@ spring:
     locations: classpath:db/migration
     baseline-on-migrate: true
 
+score:
+  service:
+    base-url: http://localhost:3000
+    timeout-ms: 5000
+
