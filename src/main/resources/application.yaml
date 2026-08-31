@@ -1,11 +1,6 @@
 spring:
   application:
     name: desafio
-#### Spring Security
-  security:
-    user:
-      name: desafio-dantum
-      password: 123456
 
 #### Banco H2
   datasource:
@@ -40,3 +35,11 @@ score:
     base-url: http://localhost:3000
     timeout-ms: 5000
 
+app:
+  security:
+    user:
+      name: user-dantum
+      password: user123
+    admin:
+      name: admin-dantum
+      password: admin123
