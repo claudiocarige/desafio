@@ -19,14 +19,21 @@ import br.com.claudiocarige.desafio.domain.exception.DomainException;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBuilder;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import java.net.URI;
 import java.util.List;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/customers")
-public class CustomerController {
+@Validated
+public class CustomerController implements CustomerControllerApi {
 
     private final CreateCustomerUseCase createCustomerUseCase;
     private final FindCustomerByIdUseCase findCustomerByIdUseCase;
@@ -50,16 +57,20 @@ public class CustomerController {
         this.findCustomersByStatusUseCase = findCustomersByStatusUseCase;
     }
 
-    @PostMapping("/create")
+    @Override
     public ResponseEntity<CustomerResponse> createCustomer(@Valid @RequestBody CreateCustomerRequest request) {
 
         CustomerDto customer = createCustomerUseCase.execute(CustomerMapper.createCustomerRequestToCreateCustomerDto(request));
-
-        return ResponseEntity.status(HttpStatus.CREATED)
+        URI location = MvcUriComponentsBuilder.fromMethodCall(
+                MvcUriComponentsBuilder.on(CustomerController.class)
+                        .findCustomerById(customer.id()))
+                .build()
+                .toUri();
+        return ResponseEntity.created(location)
                 .body(CustomerMapper.customerDtoToCustomerResponse(customer));
     }
 
-    @GetMapping("/search/{id}")
+    @Override
     public ResponseEntity<CustomerResponse> findCustomerById(@PathVariable UUID id) {
 
         CustomerDto customer = findCustomerByIdUseCase.findCustomerById(id);
@@ -67,11 +78,8 @@ public class CustomerController {
         return ResponseEntity.ok(CustomerMapper.customerDtoToCustomerResponse(customer));
     }
 
-    @GetMapping("/search")
-    public ResponseEntity<CustomerPageResponse> searchCustomers(
-            @RequestParam(defaultValue = "0", required = false) Integer page,
-            @RequestParam(defaultValue = "20", required = false) Integer size,
-            @RequestParam(required = false) String name) {
+    @Override
+    public ResponseEntity<CustomerPageResponse> searchCustomers (Integer page, Integer size, String name) {
 
         CustomerPageDto customersPage = searchCustomersUseCase.execute(page, size, name);
         List<CustomerResponse> customerResponses = customersPage.content().stream()
@@ -83,7 +91,7 @@ public class CustomerController {
         return ResponseEntity.ok().body(response);
     }
 
-    @PutMapping("/update/{id}")
+    @Override
     public ResponseEntity<CustomerResponse> updateCustomer(
             @PathVariable UUID id,
             @Valid @RequestBody UpdateCustomerRequest request) {
@@ -96,13 +104,13 @@ public class CustomerController {
         return ResponseEntity.ok().body(CustomerMapper.customerDtoToCustomerResponse(customer));
     }
 
-    @GetMapping("/{id}/score")
+    @Override
     public ResponseEntity<CustomerScoreDto> getCustomerScore(@PathVariable UUID id) {
         CustomerScoreDto score = getCustomerScoreUseCase.execute(id);
         return ResponseEntity.ok(score);
     }
 
-    @GetMapping
+    @Override
     public ResponseEntity<CustomerPageResponse> findCustomersByStatus(
             @RequestParam String status,
             @RequestParam(defaultValue = "0", required = false) Integer page,
@@ -119,7 +127,7 @@ public class CustomerController {
         return ResponseEntity.ok(response);
     }
 
-    @DeleteMapping("/delete/{id}")
+    @Override
     public ResponseEntity<Void> deleteCustomer(@PathVariable UUID id) {
         // Este endpoint está a nivel informativo, pois não implementarei a deleção de Clientes.
         throw DomainException.with(

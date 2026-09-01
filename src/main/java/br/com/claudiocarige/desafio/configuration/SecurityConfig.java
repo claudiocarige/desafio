@@ -1,5 +1,6 @@
 package br.com.claudiocarige.desafio.configuration;
 
+import br.com.claudiocarige.desafio.adapter.in.web.controllers.security.CustomAuthenticationEntryPoint;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.security.autoconfigure.web.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
@@ -28,6 +29,12 @@ public class SecurityConfig {
 
     @Value("${app.security.admin.password}")
     private String adminPassword;
+
+    private final CustomAuthenticationEntryPoint authenticationEntryPoint;
+
+    public SecurityConfig(CustomAuthenticationEntryPoint authenticationEntryPoint) {
+        this.authenticationEntryPoint = authenticationEntryPoint;
+    }
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -59,6 +66,7 @@ public class SecurityConfig {
                 )
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(PathRequest.toH2Console()).permitAll()
+                        .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
                         .requestMatchers(HttpMethod.POST, "/customers/create").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.PUT, "/customers/update/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.DELETE, "/customers/delete/**").hasRole("ADMIN")

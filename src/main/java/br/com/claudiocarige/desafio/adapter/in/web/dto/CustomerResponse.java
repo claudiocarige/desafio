@@ -3,15 +3,16 @@ package br.com.claudiocarige.desafio.adapter.in.web.dto;
 import br.com.claudiocarige.desafio.adapter.in.web.mapper.CustomerMapper;
 import br.com.claudiocarige.desafio.application.dto.CustomerDto;
 import br.com.claudiocarige.desafio.domain.enums.CustomerStatus;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.util.UUID;
 
 public record CustomerResponse(
-        UUID id,
-        String name,
-        String cpf,
-        String email,
-        CustomerStatus status) {
+        @Schema(description = "Identificador único do cliente") UUID id,
+        @Schema(description = "Nome completo do cliente", example = "Maria da Silva") String name,
+        @Schema(description = "CPF do cliente, somente dígitos", example = "12345678901") String cpf,
+        @Schema(description = "E-mail do cliente", example = "maria.silva@email.com") String email,
+        @Schema(description = "Status atual do cliente") CustomerStatus status) {
 
     public static CustomerResponse from(CustomerDto customerDto) {
         return CustomerMapper.customerDtoToCustomerResponse(customerDto);
