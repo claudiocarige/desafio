@@ -1,5 +1,6 @@
 package br.com.claudiocarige.desafio.application.usecase;
 
+import br.com.claudiocarige.desafio.adapter.in.web.exceptions.IllegalArgumentException;
 import br.com.claudiocarige.desafio.adapter.in.web.mapper.CustomerMapper;
 import br.com.claudiocarige.desafio.application.dto.CustomerDto;
 import br.com.claudiocarige.desafio.application.dto.CustomerPageDto;
@@ -20,11 +21,6 @@ public class SearchCustomersUseCaseImpl implements SearchCustomersUseCase {
 
     public SearchCustomersUseCaseImpl(SearchCustomersRepositoryPort searchCustomersRepository) {
         this.searchCustomersRepository = searchCustomersRepository;
-    }
-
-    @Override
-    public CustomerPageDto execute(Integer page, Integer size) {
-        return execute(page, size, null);
     }
 
     @Override

@@ -4,7 +4,5 @@ import br.com.claudiocarige.desafio.application.dto.CustomerPageDto;
 
 public interface SearchCustomersUseCase {
 
-    CustomerPageDto execute(Integer page, Integer size);
-
     CustomerPageDto execute(Integer page, Integer size, String name);
 }

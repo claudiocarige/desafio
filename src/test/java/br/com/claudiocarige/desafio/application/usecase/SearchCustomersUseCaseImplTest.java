@@ -1,5 +1,6 @@
 package br.com.claudiocarige.desafio.application.usecase;
 
+import br.com.claudiocarige.desafio.adapter.in.web.exceptions.IllegalArgumentException;
 import br.com.claudiocarige.desafio.application.dto.CustomerPageDto;
 import br.com.claudiocarige.desafio.application.port.out.SearchCustomersRepositoryPort;
 import br.com.claudiocarige.desafio.domain.enums.CustomerStatus;
@@ -113,7 +114,7 @@ class SearchCustomersUseCaseImplTest {
         @Test
         @DisplayName("Deve lançar IllegalArgumentException quando página for negativa")
         void deveLancarExcecaoQuandoPaginaNegativa() {
-            IllegalArgumentException ex = assertThrows(IllegalArgumentException.class,
+             IllegalArgumentException ex = assertThrows(IllegalArgumentException.class,
                     () -> useCase.execute(-1, 20, null));
 
             assertEquals("Página deve ser maior ou igual a zero", ex.getMessage());
