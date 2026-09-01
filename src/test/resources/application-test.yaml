@@ -1,0 +1,8 @@
+app:
+  security:
+    user:
+      name: user-dantum
+      password: user123
+    admin:
+      name: admin-dantum
+      password: admin123
