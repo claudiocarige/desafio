@@ -38,8 +38,8 @@ score:
 app:
   security:
     user:
-      name: user-dantum
-      password: user123
+      name: ${USER_LOGIN_DANTUM}
+      password: ${USER_PASSWORD_DANTUM}
     admin:
-      name: admin-dantum
-      password: admin123
+      name: ${ADMIN_LOGIN_DANTUM}
+      password: ${ADMIN_PASSWORD_DANTUM}
