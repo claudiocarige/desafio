@@ -5,10 +5,12 @@ import br.com.claudiocarige.desafio.domain.exception.DomainException;
 import br.com.claudiocarige.desafio.domain.exception.ExternalScoreServiceException;
 import br.com.claudiocarige.desafio.domain.exception.NotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -155,7 +157,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(HttpMessageNotReadableException.class)
-    public ResponseEntity<ApiError> handleJsonParseError(HttpMessageNotReadableException ex,HttpServletRequest request) {
+    public ResponseEntity<ApiError> handleJsonParseError(HttpMessageNotReadableException ex, HttpServletRequest request) {
 
         var status = HttpStatus.BAD_REQUEST;
         String msg = "JSON inválido. Verifique se todos os campos têm valores ou remova-os.";
@@ -168,6 +170,55 @@ public class GlobalExceptionHandler {
                         request.getRequestURI()
                 ));
 
+    }
+
+    @ExceptionHandler(ConstraintViolationException.class)
+    public ResponseEntity<ApiError> handleConstraintViolationException(
+            ConstraintViolationException ex,
+            HttpServletRequest request) {
+
+        log.warn("Violação de restrição em '{}': {}", request.getRequestURI(), ex.getMessage());
+
+        List<ApiError.FieldError> fieldErrors = ex.getConstraintViolations()
+                .stream()
+                .map(violation -> {
+                    String propertyPath = violation.getPropertyPath().toString();
+                    String fieldName = propertyPath.contains(".")
+                            ? propertyPath.substring(propertyPath.lastIndexOf('.') + 1)
+                            : propertyPath;
+
+                    return new ApiError.FieldError(fieldName, violation.getMessage());
+                })
+                .toList();
+
+        var status = HttpStatus.BAD_REQUEST;
+
+        return ResponseEntity
+                .status(status)
+                .body(ApiError.of(
+                        status.value(),
+                        status.getReasonPhrase(),
+                        "Erro de validação nos parâmetros da requisição",
+                        request.getRequestURI(),
+                        fieldErrors
+                ));
+    }
+
+    @ExceptionHandler(AuthenticationException.class)
+    public ResponseEntity<ApiError> handleAuthenticationException(
+            AuthenticationException ex,
+            HttpServletRequest request) {
+
+        var status = HttpStatus.UNAUTHORIZED;
+
+        return ResponseEntity
+                .status(status)
+                .body(ApiError.of(
+                        status.value(),
+                        status.getReasonPhrase(),
+                        "Credenciais inválidas ou ausentes. Autenticação necessária.",
+                        request.getRequestURI()
+                ));
     }
 }
 
