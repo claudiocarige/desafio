@@ -1,8 +1,8 @@
 package br.com.claudiocarige.desafio.application.usecase;
 
-import br.com.claudiocarige.desafio.adapter.in.web.mapper.CustomerMapper;
 import br.com.claudiocarige.desafio.application.dto.CreateCustomerDto;
 import br.com.claudiocarige.desafio.application.dto.CustomerDto;
+import br.com.claudiocarige.desafio.application.mapper.CustomerDtoMapper;
 import br.com.claudiocarige.desafio.application.port.in.CreateCustomerUseCase;
 import br.com.claudiocarige.desafio.application.port.out.CreateCustomerRepositoryPort;
 import br.com.claudiocarige.desafio.domain.model.Customer;
@@ -20,8 +20,8 @@ public class CreateCustomerUseCaseImpl implements CreateCustomerUseCase {
     @Override
     public CustomerDto execute(CreateCustomerDto createCustomerDto) {
 
-        Customer savedCustomer = createCustomerRepository.save(CustomerMapper.createCustomerDtoToCustomer(createCustomerDto));
+        Customer savedCustomer = createCustomerRepository.save(CustomerDtoMapper.createCustomerDtoToCustomer(createCustomerDto));
 
-        return CustomerMapper.customerToCustomerDto(savedCustomer);
+        return CustomerDtoMapper.customerToCustomerDto(savedCustomer);
     }
 }

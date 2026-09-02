@@ -1,8 +1,8 @@
 package br.com.claudiocarige.desafio.application.usecase;
 
-import br.com.claudiocarige.desafio.adapter.in.web.mapper.CustomerMapper;
 import br.com.claudiocarige.desafio.application.dto.CustomerDto;
 import br.com.claudiocarige.desafio.application.dto.CustomerPageDto;
+import br.com.claudiocarige.desafio.application.mapper.CustomerDtoMapper;
 import br.com.claudiocarige.desafio.application.port.in.FindCustomersByStatusUseCase;
 import br.com.claudiocarige.desafio.application.port.out.SearchCustomersRepositoryPort;
 import br.com.claudiocarige.desafio.domain.enums.CustomerStatus;
@@ -46,7 +46,7 @@ public class FindCustomersByStatusUseCaseImpl implements FindCustomersByStatusUs
                 searchCustomersRepository.searchByStatus(status, currentPage, currentSize);
 
         List<CustomerDto> content = result.content().stream()
-                .map(CustomerMapper::customerToCustomerDto)
+                .map(CustomerDtoMapper::customerToCustomerDto)
                 .toList();
 
         return CustomerPageDto.of(content, currentPage, currentSize, result.totalElements());

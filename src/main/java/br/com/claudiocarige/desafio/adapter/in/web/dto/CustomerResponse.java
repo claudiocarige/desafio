@@ -1,6 +1,6 @@
 package br.com.claudiocarige.desafio.adapter.in.web.dto;
 
-import br.com.claudiocarige.desafio.adapter.in.web.mapper.CustomerMapper;
+import br.com.claudiocarige.desafio.adapter.in.web.mapper.CustomerWebMapper;
 import br.com.claudiocarige.desafio.application.dto.CustomerDto;
 import br.com.claudiocarige.desafio.domain.enums.CustomerStatus;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -15,6 +15,6 @@ public record CustomerResponse(
         @Schema(description = "Status atual do cliente") CustomerStatus status) {
 
     public static CustomerResponse from(CustomerDto customerDto) {
-        return CustomerMapper.customerDtoToCustomerResponse(customerDto);
+        return CustomerWebMapper.customerDtoToCustomerResponse(customerDto);
     }
 }

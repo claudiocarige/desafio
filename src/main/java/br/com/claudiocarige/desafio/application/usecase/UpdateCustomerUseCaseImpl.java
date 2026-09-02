@@ -1,8 +1,8 @@
 package br.com.claudiocarige.desafio.application.usecase;
 
-import br.com.claudiocarige.desafio.adapter.in.web.mapper.CustomerMapper;
 import br.com.claudiocarige.desafio.application.dto.CustomerDto;
 import br.com.claudiocarige.desafio.application.dto.UpdateCustomerDto;
+import br.com.claudiocarige.desafio.application.mapper.CustomerDtoMapper;
 import br.com.claudiocarige.desafio.application.port.in.UpdateCustomerUseCase;
 import br.com.claudiocarige.desafio.application.port.out.FindCustomerByIdRepositoryPort;
 import br.com.claudiocarige.desafio.application.port.out.UpdateCustomerRepositoryPort;
@@ -31,9 +31,9 @@ public class UpdateCustomerUseCaseImpl implements UpdateCustomerUseCase {
         }
 
         Customer oldCustomer = findCustomerByIdRepository.findById(id);
-        Customer updatedCustomer = CustomerMapper.updateCustomerDtoToCustomer(customerDto, oldCustomer);
+        Customer updatedCustomer = CustomerDtoMapper.updateCustomerDtoToCustomer(customerDto, oldCustomer);
 
         Customer savedCustomer = updateCustomerRepository.update(updatedCustomer);
-        return CustomerMapper.customerToCustomerDto(savedCustomer);
+        return CustomerDtoMapper.customerToCustomerDto(savedCustomer);
     }
 }

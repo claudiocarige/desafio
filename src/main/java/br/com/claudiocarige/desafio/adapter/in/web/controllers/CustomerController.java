@@ -4,7 +4,7 @@ import br.com.claudiocarige.desafio.adapter.in.web.dto.CreateCustomerRequest;
 import br.com.claudiocarige.desafio.adapter.in.web.dto.CustomerPageResponse;
 import br.com.claudiocarige.desafio.adapter.in.web.dto.CustomerResponse;
 import br.com.claudiocarige.desafio.adapter.in.web.dto.UpdateCustomerRequest;
-import br.com.claudiocarige.desafio.adapter.in.web.mapper.CustomerMapper;
+import br.com.claudiocarige.desafio.adapter.in.web.mapper.CustomerWebMapper;
 import br.com.claudiocarige.desafio.application.dto.CustomerDto;
 import br.com.claudiocarige.desafio.application.dto.CustomerPageDto;
 import br.com.claudiocarige.desafio.application.dto.CustomerScoreDto;
@@ -58,14 +58,14 @@ public class CustomerController implements CustomerControllerApi {
     @Override
     public ResponseEntity<CustomerResponse> createCustomer(@Valid @RequestBody CreateCustomerRequest request) {
 
-        CustomerDto customer = createCustomerUseCase.execute(CustomerMapper.createCustomerRequestToCreateCustomerDto(request));
+        CustomerDto customer = createCustomerUseCase.execute(CustomerWebMapper.createCustomerRequestToCreateCustomerDto(request));
         URI location = MvcUriComponentsBuilder.fromMethodCall(
                 MvcUriComponentsBuilder.on(CustomerController.class)
                         .findCustomerById(customer.id()))
                 .build()
                 .toUri();
         return ResponseEntity.created(location)
-                .body(CustomerMapper.customerDtoToCustomerResponse(customer));
+                .body(CustomerWebMapper.customerDtoToCustomerResponse(customer));
     }
 
     @Override
@@ -73,7 +73,7 @@ public class CustomerController implements CustomerControllerApi {
 
         CustomerDto customer = findCustomerByIdUseCase.findCustomerById(id);
 
-        return ResponseEntity.ok(CustomerMapper.customerDtoToCustomerResponse(customer));
+        return ResponseEntity.ok(CustomerWebMapper.customerDtoToCustomerResponse(customer));
     }
 
     @Override
@@ -81,10 +81,10 @@ public class CustomerController implements CustomerControllerApi {
 
         CustomerPageDto customersPage = searchCustomersUseCase.execute(page, size, name);
         List<CustomerResponse> customerResponses = customersPage.content().stream()
-                .map(CustomerMapper::customerDtoToCustomerResponse)
+                .map(CustomerWebMapper::customerDtoToCustomerResponse)
                 .toList();
 
-        CustomerPageResponse response = CustomerMapper.customerPageToCustomerPageResponse(customerResponses, customersPage);
+        CustomerPageResponse response = CustomerWebMapper.customerPageToCustomerPageResponse(customerResponses, customersPage);
 
         return ResponseEntity.ok().body(response);
     }
@@ -96,10 +96,10 @@ public class CustomerController implements CustomerControllerApi {
 
         CustomerDto customer = updateCustomerUseCase.execute(
                 id,
-                CustomerMapper.updateCustomerRequestToUpdateCustomerDto(request)
+                CustomerWebMapper.updateCustomerRequestToUpdateCustomerDto(request)
         );
 
-        return ResponseEntity.ok().body(CustomerMapper.customerDtoToCustomerResponse(customer));
+        return ResponseEntity.ok().body(CustomerWebMapper.customerDtoToCustomerResponse(customer));
     }
 
     @Override
@@ -117,10 +117,10 @@ public class CustomerController implements CustomerControllerApi {
         CustomerStatus customerStatus = CustomerStatus.toEnum(status);
         CustomerPageDto customersPage = findCustomersByStatusUseCase.execute(customerStatus, page, size);
         List<CustomerResponse> customerResponses = customersPage.content().stream()
-                .map(CustomerMapper::customerDtoToCustomerResponse)
+                .map(CustomerWebMapper::customerDtoToCustomerResponse)
                 .toList();
 
-        CustomerPageResponse response = CustomerMapper.customerPageToCustomerPageResponse(customerResponses, customersPage);
+        CustomerPageResponse response = CustomerWebMapper.customerPageToCustomerPageResponse(customerResponses, customersPage);
 
         return ResponseEntity.ok(response);
     }

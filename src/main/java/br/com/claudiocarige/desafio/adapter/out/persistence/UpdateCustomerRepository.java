@@ -1,6 +1,6 @@
 package br.com.claudiocarige.desafio.adapter.out.persistence;
 
-import br.com.claudiocarige.desafio.adapter.in.web.mapper.CustomerMapper;
+import br.com.claudiocarige.desafio.adapter.out.persistence.mapper.CustomerEntityMapper;
 import br.com.claudiocarige.desafio.application.port.out.UpdateCustomerRepositoryPort;
 import br.com.claudiocarige.desafio.domain.exception.DomainException;
 import br.com.claudiocarige.desafio.domain.exception.NotFoundException;
@@ -34,7 +34,7 @@ public class UpdateCustomerRepository implements UpdateCustomerRepositoryPort {
         existingEntity.setStatus(customer.getStatus());
 
         CustomerEntity updatedEntity = customerRepository.save(existingEntity);
-        return CustomerMapper.customerEntityToCustomer(updatedEntity);
+        return CustomerEntityMapper.customerEntityToCustomer(updatedEntity);
     }
 
 }

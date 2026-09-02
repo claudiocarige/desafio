@@ -1,6 +1,6 @@
 package br.com.claudiocarige.desafio.adapter.out.persistence;
 
-import br.com.claudiocarige.desafio.adapter.in.web.mapper.CustomerMapper;
+import br.com.claudiocarige.desafio.adapter.out.persistence.mapper.CustomerEntityMapper;
 import br.com.claudiocarige.desafio.application.port.out.SearchCustomersRepositoryPort;
 import br.com.claudiocarige.desafio.domain.enums.CustomerStatus;
 import br.com.claudiocarige.desafio.domain.model.Customer;
@@ -40,7 +40,7 @@ public class SearchCustomersRepository implements SearchCustomersRepositoryPort 
 
     private SearchResult mapResult(Page<CustomerEntity> pageResult) {
         List<Customer> customers = pageResult.stream()
-                .map(CustomerMapper::customerEntityToCustomer)
+                .map(CustomerEntityMapper::customerEntityToCustomer)
                 .toList();
 
         return new SearchResult(customers, pageResult.getTotalElements());

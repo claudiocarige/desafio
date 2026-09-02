@@ -1,6 +1,6 @@
 package br.com.claudiocarige.desafio.adapter.out.persistence;
 
-import br.com.claudiocarige.desafio.adapter.in.web.mapper.CustomerMapper;
+import br.com.claudiocarige.desafio.adapter.out.persistence.mapper.CustomerEntityMapper;
 import br.com.claudiocarige.desafio.application.port.out.CreateCustomerRepositoryPort;
 import br.com.claudiocarige.desafio.domain.exception.DomainException;
 import br.com.claudiocarige.desafio.domain.model.Customer;
@@ -18,11 +18,11 @@ public class CreateCustomerRepository implements CreateCustomerRepositoryPort {
     @Override
     public Customer save(Customer customer) {
         verifyIfCpfExists(customer.getCpf().value());
-        CustomerEntity entity = CustomerMapper.customerToCustomerEntity(customer);
+        CustomerEntity entity = CustomerEntityMapper.customerToCustomerEntity(customer);
 
         CustomerEntity savedEntity = customerRepository.save(entity);
 
-        return CustomerMapper.customerEntityToCustomer(savedEntity);
+        return CustomerEntityMapper.customerEntityToCustomer(savedEntity);
     }
 
     private void verifyIfCpfExists(String cpf) {
