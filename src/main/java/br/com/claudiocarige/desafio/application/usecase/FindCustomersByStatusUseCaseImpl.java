@@ -8,10 +8,12 @@ import br.com.claudiocarige.desafio.application.port.out.SearchCustomersReposito
 import br.com.claudiocarige.desafio.application.valueobject.PageQuery;
 import br.com.claudiocarige.desafio.domain.enums.CustomerStatus;
 import br.com.claudiocarige.desafio.domain.exception.DomainException;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+@Slf4j
 @Service
 public class FindCustomersByStatusUseCaseImpl implements FindCustomersByStatusUseCase {
 
@@ -23,7 +25,10 @@ public class FindCustomersByStatusUseCaseImpl implements FindCustomersByStatusUs
 
     @Override
     public CustomerPageDto execute(CustomerStatus status, Integer page, Integer size) {
+        log.info("### INICIANDO FindCustomersByStatusUseCaseImpl - Status: {}, Page: {}, Size: {} ###", status, page, size);
+
         if (status == null) {
+            log.error("XXX Error - Status não informado para busca de clientes XXX");
             throw DomainException.with("Status é obrigatório");
         }
 
@@ -36,6 +41,9 @@ public class FindCustomersByStatusUseCaseImpl implements FindCustomersByStatusUs
                 .map(CustomerDtoMapper::customerToCustomerDto)
                 .toList();
 
-        return CustomerPageDto.of(content, pageQuery.page(), pageQuery.size(), result.totalElements());
+        CustomerPageDto pageDto = CustomerPageDto.of(content, pageQuery.page(), pageQuery.size(), result.totalElements());
+
+        log.info("### FINALIZANDO FindCustomersByStatusUseCaseImpl - Total encontrados: {} ###", pageDto.totalElements());
+        return pageDto;
     }
 }

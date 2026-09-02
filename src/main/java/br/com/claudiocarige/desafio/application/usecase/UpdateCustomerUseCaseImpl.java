@@ -8,10 +8,12 @@ import br.com.claudiocarige.desafio.application.port.out.FindCustomerByIdReposit
 import br.com.claudiocarige.desafio.application.port.out.UpdateCustomerRepositoryPort;
 import br.com.claudiocarige.desafio.domain.exception.DomainException;
 import br.com.claudiocarige.desafio.domain.model.Customer;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.UUID;
 
+@Slf4j
 @Service
 public class UpdateCustomerUseCaseImpl implements UpdateCustomerUseCase {
 
@@ -27,7 +29,10 @@ public class UpdateCustomerUseCaseImpl implements UpdateCustomerUseCase {
 
     @Override
     public CustomerDto execute(UUID id, UpdateCustomerDto customerDto) {
+        log.info("### INICIANDO UpdateCustomerUseCaseImpl - ID: {} ###", id);
+
         if (id == null || id.toString().isBlank()) {
+            log.error("XXX Error - ID do cliente não informado para atualização XXX");
             throw DomainException.with("ID do cliente é obrigatório");
         }
 
@@ -35,6 +40,9 @@ public class UpdateCustomerUseCaseImpl implements UpdateCustomerUseCase {
         Customer updatedCustomer = CustomerDtoMapper.updateCustomerDtoToCustomer(customerDto, oldCustomer);
 
         Customer savedCustomer = updateCustomerRepository.update(updatedCustomer);
-        return CustomerDtoMapper.customerToCustomerDto(savedCustomer);
+        CustomerDto result = CustomerDtoMapper.customerToCustomerDto(savedCustomer);
+
+        log.info("### FINALIZANDO UpdateCustomerUseCaseImpl - ID: {} ###", result.id());
+        return result;
     }
 }

@@ -41,6 +41,7 @@ public class FindCustomerByIdRepository implements FindCustomerByIdRepositoryPor
         );
 
         if (result.isEmpty()) {
+            log.error("XXX Error - Cliente não encontrado - ID: {} XXX", id);
             throw NotFoundException.of("Cliente não encontrado ", id);
         }
         log.info("### FINALIZANDO FindCustomerByIdRepository - Cliente encontrado: {} ###", result.get(0).getId());
