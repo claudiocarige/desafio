@@ -114,7 +114,7 @@ class SearchCustomersUseCaseImplTest {
         @Test
         @DisplayName("Deve lançar IllegalArgumentException quando página for negativa")
         void deveLancarExcecaoQuandoPaginaNegativa() {
-             IllegalArgumentException ex = assertThrows(IllegalArgumentException.class,
+              IllegalArgumentException ex = assertThrows(IllegalArgumentException.class,
                     () -> useCase.execute(-1, 20, null));
 
             assertEquals("Página deve ser maior ou igual a zero", ex.getMessage());
@@ -124,7 +124,7 @@ class SearchCustomersUseCaseImplTest {
         @Test
         @DisplayName("Deve lançar IllegalArgumentException quando tamanho for menor ou igual a zero")
         void deveLancarExcecaoQuandoTamanhoInvalido() {
-            IllegalArgumentException ex = assertThrows(IllegalArgumentException.class,
+             IllegalArgumentException ex = assertThrows(IllegalArgumentException.class,
                     () -> useCase.execute(0, 0, null));
 
             assertEquals("Tamanho da página deve ser maior que zero", ex.getMessage());
@@ -134,7 +134,7 @@ class SearchCustomersUseCaseImplTest {
         @Test
         @DisplayName("Deve lançar IllegalArgumentException quando tamanho exceder o máximo permitido")
         void deveLancarExcecaoQuandoTamanhoMaiorQueMaximo() {
-            IllegalArgumentException ex = assertThrows(IllegalArgumentException.class,
+             IllegalArgumentException ex = assertThrows(IllegalArgumentException.class,
                     () -> useCase.execute(0, 51, null));
 
             assertEquals("Tamanho da página não pode ser maior que 50", ex.getMessage());

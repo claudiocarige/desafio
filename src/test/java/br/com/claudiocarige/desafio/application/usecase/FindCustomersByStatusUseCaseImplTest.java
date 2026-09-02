@@ -1,5 +1,6 @@
 package br.com.claudiocarige.desafio.application.usecase;
 
+import br.com.claudiocarige.desafio.adapter.in.web.exceptions.IllegalArgumentException;
 import br.com.claudiocarige.desafio.application.dto.CustomerPageDto;
 import br.com.claudiocarige.desafio.application.port.out.SearchCustomersRepositoryPort;
 import br.com.claudiocarige.desafio.domain.enums.CustomerStatus;
@@ -82,7 +83,7 @@ class FindCustomersByStatusUseCaseImplTest {
         @Test
         @DisplayName("Deve lançar IllegalArgumentException quando status for nulo")
         void deveLancarExcecaoQuandoStatusNulo() {
-            IllegalArgumentException ex = assertThrows(IllegalArgumentException.class,
+             IllegalArgumentException ex = assertThrows(IllegalArgumentException.class,
                     () -> useCase.execute(null, 0, 20));
 
             assertEquals("Status é obrigatório", ex.getMessage());
@@ -92,7 +93,7 @@ class FindCustomersByStatusUseCaseImplTest {
         @Test
         @DisplayName("Deve lançar IllegalArgumentException quando página for negativa")
         void deveLancarExcecaoQuandoPaginaNegativa() {
-            IllegalArgumentException ex = assertThrows(IllegalArgumentException.class,
+             IllegalArgumentException ex = assertThrows(IllegalArgumentException.class,
                     () -> useCase.execute(CustomerStatus.ACTIVE, -1, 20));
 
             assertEquals("Página deve ser maior ou igual a zero", ex.getMessage());
@@ -102,7 +103,7 @@ class FindCustomersByStatusUseCaseImplTest {
         @Test
         @DisplayName("Deve lançar IllegalArgumentException quando tamanho for menor ou igual a zero")
         void deveLancarExcecaoQuandoTamanhoInvalido() {
-            IllegalArgumentException ex = assertThrows(IllegalArgumentException.class,
+             IllegalArgumentException ex = assertThrows(IllegalArgumentException.class,
                     () -> useCase.execute(CustomerStatus.ACTIVE, 0, 0));
 
             assertEquals("Tamanho da página deve ser maior que zero", ex.getMessage());
@@ -112,7 +113,7 @@ class FindCustomersByStatusUseCaseImplTest {
         @Test
         @DisplayName("Deve lançar IllegalArgumentException quando tamanho exceder o máximo permitido")
         void deveLancarExcecaoQuandoTamanhoMaiorQueMaximo() {
-            IllegalArgumentException ex = assertThrows(IllegalArgumentException.class,
+             IllegalArgumentException ex = assertThrows(IllegalArgumentException.class,
                     () -> useCase.execute(CustomerStatus.ACTIVE, 0, 51));
 
             assertEquals("Tamanho da página não pode ser maior que 50", ex.getMessage());
