@@ -5,6 +5,7 @@ import br.com.claudiocarige.desafio.application.dto.UpdateCustomerDto;
 import br.com.claudiocarige.desafio.application.port.out.FindCustomerByIdRepositoryPort;
 import br.com.claudiocarige.desafio.application.port.out.UpdateCustomerRepositoryPort;
 import br.com.claudiocarige.desafio.domain.enums.CustomerStatus;
+import br.com.claudiocarige.desafio.domain.exception.DomainException;
 import br.com.claudiocarige.desafio.domain.exception.NotFoundException;
 import br.com.claudiocarige.desafio.domain.model.Customer;
 import br.com.claudiocarige.desafio.domain.valueobject.Cpf;
@@ -89,9 +90,9 @@ class UpdateCustomerUseCaseImplTest {
     class ValidacaoDeEntrada {
 
         @Test
-        @DisplayName("Deve lançar IllegalArgumentException quando ID é nulo")
+        @DisplayName("Deve lançar DomainException quando ID é nulo")
         void deveLancarExcecaoQuandoIdNulo() {
-            IllegalArgumentException ex = assertThrows(IllegalArgumentException.class,
+            DomainException ex = assertThrows(DomainException.class,
                     () -> useCase.execute(null, dtoAtualizacao));
 
             assertEquals("ID do cliente é obrigatório", ex.getMessage());

@@ -1,21 +1,21 @@
 package br.com.claudiocarige.desafio.application.usecase;
 
-import br.com.claudiocarige.desafio.adapter.in.web.mapper.CustomerMapper;
 import br.com.claudiocarige.desafio.application.dto.CustomerDto;
 import br.com.claudiocarige.desafio.application.dto.CustomerPageDto;
+import br.com.claudiocarige.desafio.application.mapper.CustomerDtoMapper;
 import br.com.claudiocarige.desafio.application.port.in.FindCustomersByStatusUseCase;
 import br.com.claudiocarige.desafio.application.port.out.SearchCustomersRepositoryPort;
+import br.com.claudiocarige.desafio.application.valueobject.PageQuery;
 import br.com.claudiocarige.desafio.domain.enums.CustomerStatus;
+import br.com.claudiocarige.desafio.domain.exception.DomainException;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+@Slf4j
 @Service
 public class FindCustomersByStatusUseCaseImpl implements FindCustomersByStatusUseCase {
-
-    private static final int DEFAULT_PAGE = 0;
-    private static final int DEFAULT_SIZE = 20;
-    private static final int MAX_SIZE = 50;
 
     private final SearchCustomersRepositoryPort searchCustomersRepository;
 
@@ -25,30 +25,25 @@ public class FindCustomersByStatusUseCaseImpl implements FindCustomersByStatusUs
 
     @Override
     public CustomerPageDto execute(CustomerStatus status, Integer page, Integer size) {
+        log.info("### INICIANDO FindCustomersByStatusUseCaseImpl - Status: {}, Page: {}, Size: {} ###", status, page, size);
+
         if (status == null) {
-            throw new IllegalArgumentException("Status é obrigatório");
+            log.error("XXX Error - Status não informado para busca de clientes XXX");
+            throw DomainException.with("Status é obrigatório");
         }
 
-        int currentPage = page != null ? page : DEFAULT_PAGE;
-        int currentSize = size != null ? size : DEFAULT_SIZE;
-
-        if (currentPage < 0) {
-            throw new IllegalArgumentException("Página deve ser maior ou igual a zero");
-        }
-        if (currentSize <= 0) {
-            throw new IllegalArgumentException("Tamanho da página deve ser maior que zero");
-        }
-        if (currentSize > MAX_SIZE) {
-            throw new IllegalArgumentException("Tamanho da página não pode ser maior que " + MAX_SIZE);
-        }
+        PageQuery pageQuery = PageQuery.of(page, size);
 
         SearchCustomersRepositoryPort.SearchResult result =
-                searchCustomersRepository.searchByStatus(status, currentPage, currentSize);
+                searchCustomersRepository.searchByStatus(status, pageQuery.page(), pageQuery.size());
 
         List<CustomerDto> content = result.content().stream()
-                .map(CustomerMapper::customerToCustomerDto)
+                .map(CustomerDtoMapper::customerToCustomerDto)
                 .toList();
 
-        return CustomerPageDto.of(content, currentPage, currentSize, result.totalElements());
+        CustomerPageDto pageDto = CustomerPageDto.of(content, pageQuery.page(), pageQuery.size(), result.totalElements());
+
+        log.info("### FINALIZANDO FindCustomersByStatusUseCaseImpl - Total encontrados: {} ###", pageDto.totalElements());
+        return pageDto;
     }
 }

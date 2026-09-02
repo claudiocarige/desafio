@@ -1,6 +1,6 @@
 package br.com.claudiocarige.desafio.adapter.out.persistence;
 
-import br.com.claudiocarige.desafio.adapter.in.web.mapper.CustomerMapper;
+import br.com.claudiocarige.desafio.adapter.out.persistence.mapper.CustomerEntityMapper;
 import br.com.claudiocarige.desafio.application.port.out.FindCustomerByIdRepositoryPort;
 import br.com.claudiocarige.desafio.domain.enums.CustomerStatus;
 import br.com.claudiocarige.desafio.domain.exception.NotFoundException;
@@ -41,10 +41,11 @@ public class FindCustomerByIdRepository implements FindCustomerByIdRepositoryPor
         );
 
         if (result.isEmpty()) {
+            log.error("XXX Error - Cliente não encontrado - ID: {} XXX", id);
             throw NotFoundException.of("Cliente não encontrado ", id);
         }
         log.info("### FINALIZANDO FindCustomerByIdRepository - Cliente encontrado: {} ###", result.get(0).getId());
-        return CustomerMapper.customerEntityToCustomer(result.get(0));
+        return CustomerEntityMapper.customerEntityToCustomer(result.get(0));
     }
 }
 

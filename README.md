@@ -184,6 +184,12 @@ Para simular localmente com o [Mockoon](https://mockoon.com/):
 4. Opcionalmente, adicione uma rota de erro (`404`/`500`) retornando
    `{ "status": <codigo>, "response": "<mensagem>" }` para simular falhas do serviço externo
    (formato esperado por `ExternalErrorResponse`).
+   ```json
+   {
+    "status": 422,
+    "response": "CPF ( {{urlParam 'cpf'}} )  é Invalido"
+   }
+   ```
 5. Inicie o ambiente no Mockoon antes de subir a aplicação (ou antes de chamar
    `GET /customers/{id}/score`).
 

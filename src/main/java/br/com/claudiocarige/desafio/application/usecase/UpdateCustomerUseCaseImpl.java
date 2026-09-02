@@ -1,16 +1,19 @@
 package br.com.claudiocarige.desafio.application.usecase;
 
-import br.com.claudiocarige.desafio.adapter.in.web.mapper.CustomerMapper;
 import br.com.claudiocarige.desafio.application.dto.CustomerDto;
 import br.com.claudiocarige.desafio.application.dto.UpdateCustomerDto;
+import br.com.claudiocarige.desafio.application.mapper.CustomerDtoMapper;
 import br.com.claudiocarige.desafio.application.port.in.UpdateCustomerUseCase;
 import br.com.claudiocarige.desafio.application.port.out.FindCustomerByIdRepositoryPort;
 import br.com.claudiocarige.desafio.application.port.out.UpdateCustomerRepositoryPort;
+import br.com.claudiocarige.desafio.domain.exception.DomainException;
 import br.com.claudiocarige.desafio.domain.model.Customer;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.UUID;
 
+@Slf4j
 @Service
 public class UpdateCustomerUseCaseImpl implements UpdateCustomerUseCase {
 
@@ -26,14 +29,20 @@ public class UpdateCustomerUseCaseImpl implements UpdateCustomerUseCase {
 
     @Override
     public CustomerDto execute(UUID id, UpdateCustomerDto customerDto) {
+        log.info("### INICIANDO UpdateCustomerUseCaseImpl - ID: {} ###", id);
+
         if (id == null || id.toString().isBlank()) {
-            throw new IllegalArgumentException("ID do cliente é obrigatório");
+            log.error("XXX Error - ID do cliente não informado para atualização XXX");
+            throw DomainException.with("ID do cliente é obrigatório");
         }
 
         Customer oldCustomer = findCustomerByIdRepository.findById(id);
-        Customer updatedCustomer = CustomerMapper.updateCustomerDtoToCustomer(customerDto, oldCustomer);
+        Customer updatedCustomer = CustomerDtoMapper.updateCustomerDtoToCustomer(customerDto, oldCustomer);
 
         Customer savedCustomer = updateCustomerRepository.update(updatedCustomer);
-        return CustomerMapper.customerToCustomerDto(savedCustomer);
+        CustomerDto result = CustomerDtoMapper.customerToCustomerDto(savedCustomer);
+
+        log.info("### FINALIZANDO UpdateCustomerUseCaseImpl - ID: {} ###", result.id());
+        return result;
     }
 }

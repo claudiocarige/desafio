@@ -1,9 +1,9 @@
 package br.com.claudiocarige.desafio.application.usecase;
 
-import br.com.claudiocarige.desafio.adapter.in.web.exceptions.IllegalArgumentException;
 import br.com.claudiocarige.desafio.application.dto.CustomerPageDto;
 import br.com.claudiocarige.desafio.application.port.out.SearchCustomersRepositoryPort;
 import br.com.claudiocarige.desafio.domain.enums.CustomerStatus;
+import br.com.claudiocarige.desafio.domain.exception.DomainException;
 import br.com.claudiocarige.desafio.domain.model.Customer;
 import br.com.claudiocarige.desafio.domain.valueobject.Cpf;
 import br.com.claudiocarige.desafio.domain.valueobject.CustomerId;
@@ -112,9 +112,9 @@ class SearchCustomersUseCaseImplTest {
     class ValidacaoDeEntrada {
 
         @Test
-        @DisplayName("Deve lançar IllegalArgumentException quando página for negativa")
+        @DisplayName("Deve lançar DomainException quando página for negativa")
         void deveLancarExcecaoQuandoPaginaNegativa() {
-             IllegalArgumentException ex = assertThrows(IllegalArgumentException.class,
+              DomainException ex = assertThrows(DomainException.class,
                     () -> useCase.execute(-1, 20, null));
 
             assertEquals("Página deve ser maior ou igual a zero", ex.getMessage());
@@ -122,9 +122,9 @@ class SearchCustomersUseCaseImplTest {
         }
 
         @Test
-        @DisplayName("Deve lançar IllegalArgumentException quando tamanho for menor ou igual a zero")
+        @DisplayName("Deve lançar DomainException quando tamanho for menor ou igual a zero")
         void deveLancarExcecaoQuandoTamanhoInvalido() {
-            IllegalArgumentException ex = assertThrows(IllegalArgumentException.class,
+             DomainException ex = assertThrows(DomainException.class,
                     () -> useCase.execute(0, 0, null));
 
             assertEquals("Tamanho da página deve ser maior que zero", ex.getMessage());
@@ -132,9 +132,9 @@ class SearchCustomersUseCaseImplTest {
         }
 
         @Test
-        @DisplayName("Deve lançar IllegalArgumentException quando tamanho exceder o máximo permitido")
+        @DisplayName("Deve lançar DomainException quando tamanho exceder o máximo permitido")
         void deveLancarExcecaoQuandoTamanhoMaiorQueMaximo() {
-            IllegalArgumentException ex = assertThrows(IllegalArgumentException.class,
+             DomainException ex = assertThrows(DomainException.class,
                     () -> useCase.execute(0, 51, null));
 
             assertEquals("Tamanho da página não pode ser maior que 50", ex.getMessage());

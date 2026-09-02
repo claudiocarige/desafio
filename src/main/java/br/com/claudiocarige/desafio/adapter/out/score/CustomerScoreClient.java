@@ -23,7 +23,10 @@ public class CustomerScoreClient implements CustomerScoreClientPort {
 
     @Override
     public CustomerScoreDto getScoreByCpf(String cpf) {
+        log.info("### INICIANDO CustomerScoreClient.getScoreByCpf - CPF: {} ###", cpf);
+
         if (cpf == null || cpf.isBlank()) {
+            log.error("XXX Error - CPF nulo ou em branco para consulta de score XXX");
             throw new IllegalArgumentException("O CPF Cliente esta nulo ou em branco, e ele é obrigatório para consultar o score.");
         }
 
@@ -34,7 +37,7 @@ public class CustomerScoreClient implements CustomerScoreClientPort {
                     .onStatus(HttpStatusCode::is4xxClientError, clientResponse ->
                             clientResponse.bodyToMono(ExternalErrorResponse.class)
                                     .flatMap(body -> {
-                                        log.error("Erro 4xx ao consultar score. cpf={}, status={}, body={}",
+                                        log.error("XXX Error 4xx ao consultar score. cpf={}, status={}, body={} XXX",
                                                 cpf, clientResponse.statusCode().value(), body);
                                         return Mono.error(new ExternalScoreServiceException(
                                                 "Serviço externo recusou a consulta: " + body.response(), body.status()));
@@ -43,7 +46,7 @@ public class CustomerScoreClient implements CustomerScoreClientPort {
                     .onStatus(HttpStatusCode::is5xxServerError, clientResponse ->
                             clientResponse.bodyToMono(ExternalErrorResponse.class)
                                     .flatMap(body -> {
-                                        log.error("Serviço de score indisponível. cpf={}, status={}, body={}",
+                                        log.error("XXX Error - Serviço de score indisponível. cpf={}, status={}, body={} XXX",
                                                 cpf, clientResponse.statusCode().value(), body);
                                         return Mono.error(new ExternalScoreServiceException(
                                                 "Serviço externo de score indisponível: " + body.response(), body.status()));
@@ -53,19 +56,26 @@ public class CustomerScoreClient implements CustomerScoreClientPort {
                     .block();
 
             if (response == null || response.score() == null || response.classification() == null) {
+                log.error("XXX Error - Resposta inesperada do serviço externo de score. cpf={} XXX", cpf);
                 throw new ExternalScoreServiceException(
                         "Resposta inesperada do serviço externo de score para o CPF %s.".formatted(cpf), 500);
             }
 
-            return new CustomerScoreDto(cpf, response.score(), response.classification());
+            CustomerScoreDto scoreDto = new CustomerScoreDto(cpf, response.score(), response.classification());
+
+            log.info("### FINALIZANDO CustomerScoreClient.getScoreByCpf - CPF: {}, Score: {} ###", cpf, scoreDto.score());
+            return scoreDto;
 
         } catch (WebClientResponseException ex) {
+            log.error("XXX Error - Falha ao consultar o score do cliente no serviço externo. Status: {}. Corpo: {} XXX",
+                    ex.getStatusCode(), ex.getResponseBodyAsString());
             throw new ExternalScoreServiceException(
                     "Falha ao consultar o score do cliente no serviço externo. Status: %s. Corpo: %s"
                             .formatted(ex.getStatusCode(), ex.getResponseBodyAsString()), ex);
         } catch (ExternalScoreServiceException ex) {
             throw ex;
         } catch (Exception ex) {
+            log.error("XXX Error - Não foi possível consultar o score do cliente no serviço externo. cpf={} XXX", cpf, ex);
             throw new ExternalScoreServiceException(
                     "Não foi possível consultar o score do cliente no serviço externo.", ex);
         }
