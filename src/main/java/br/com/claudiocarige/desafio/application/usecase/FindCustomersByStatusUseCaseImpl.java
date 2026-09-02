@@ -1,6 +1,5 @@
 package br.com.claudiocarige.desafio.application.usecase;
 
-import br.com.claudiocarige.desafio.adapter.in.web.exceptions.IllegalArgumentException;
 import br.com.claudiocarige.desafio.application.dto.CustomerDto;
 import br.com.claudiocarige.desafio.application.dto.CustomerPageDto;
 import br.com.claudiocarige.desafio.application.mapper.CustomerDtoMapper;
@@ -8,6 +7,7 @@ import br.com.claudiocarige.desafio.application.port.in.FindCustomersByStatusUse
 import br.com.claudiocarige.desafio.application.port.out.SearchCustomersRepositoryPort;
 import br.com.claudiocarige.desafio.application.valueobject.PageQuery;
 import br.com.claudiocarige.desafio.domain.enums.CustomerStatus;
+import br.com.claudiocarige.desafio.domain.exception.DomainException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -24,7 +24,7 @@ public class FindCustomersByStatusUseCaseImpl implements FindCustomersByStatusUs
     @Override
     public CustomerPageDto execute(CustomerStatus status, Integer page, Integer size) {
         if (status == null) {
-            throw new IllegalArgumentException("Status é obrigatório");
+            throw DomainException.with("Status é obrigatório");
         }
 
         PageQuery pageQuery = PageQuery.of(page, size);

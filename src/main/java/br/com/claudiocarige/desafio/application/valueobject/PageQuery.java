@@ -1,14 +1,8 @@
 package br.com.claudiocarige.desafio.application.valueobject;
 
-import br.com.claudiocarige.desafio.adapter.in.web.exceptions.IllegalArgumentException;
+import br.com.claudiocarige.desafio.domain.exception.DomainException;
 
-/**
- * Value object que representa e autovalida os parâmetros de paginação
- * (página e tamanho) utilizados pelos use cases de busca de clientes.
- * Centraliza a regra "tamanho máximo de página" para evitar duplicação
- * entre {@code SearchCustomersUseCaseImpl} e
- * {@code FindCustomersByStatusUseCaseImpl}.
- */
+
 public record PageQuery(int page, int size) {
 
     private static final int DEFAULT_PAGE = 0;
@@ -17,13 +11,13 @@ public record PageQuery(int page, int size) {
 
     public PageQuery {
         if (page < 0) {
-            throw new IllegalArgumentException("Página deve ser maior ou igual a zero");
+            throw DomainException.with("Página deve ser maior ou igual a zero");
         }
         if (size <= 0) {
-            throw new IllegalArgumentException("Tamanho da página deve ser maior que zero");
+            throw DomainException.with("Tamanho da página deve ser maior que zero");
         }
         if (size > MAX_SIZE) {
-            throw new IllegalArgumentException("Tamanho da página não pode ser maior que " + MAX_SIZE);
+            throw DomainException.with("Tamanho da página não pode ser maior que " + MAX_SIZE);
         }
     }
 

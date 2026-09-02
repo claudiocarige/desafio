@@ -6,6 +6,7 @@ import br.com.claudiocarige.desafio.application.mapper.CustomerDtoMapper;
 import br.com.claudiocarige.desafio.application.port.in.UpdateCustomerUseCase;
 import br.com.claudiocarige.desafio.application.port.out.FindCustomerByIdRepositoryPort;
 import br.com.claudiocarige.desafio.application.port.out.UpdateCustomerRepositoryPort;
+import br.com.claudiocarige.desafio.domain.exception.DomainException;
 import br.com.claudiocarige.desafio.domain.model.Customer;
 import org.springframework.stereotype.Service;
 
@@ -27,7 +28,7 @@ public class UpdateCustomerUseCaseImpl implements UpdateCustomerUseCase {
     @Override
     public CustomerDto execute(UUID id, UpdateCustomerDto customerDto) {
         if (id == null || id.toString().isBlank()) {
-            throw new IllegalArgumentException("ID do cliente é obrigatório");
+            throw DomainException.with("ID do cliente é obrigatório");
         }
 
         Customer oldCustomer = findCustomerByIdRepository.findById(id);
